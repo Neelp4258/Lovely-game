@@ -1,0 +1,26 @@
+{
+  "name": "lovely-city-game",
+  "version": "1.0.0",
+  "description": "3D Multiplayer City Game with Three.js and WebRTC",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "cd server && node server.js",
+    "dev:client": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "cd server && node server.js"
+  },
+  "dependencies": {
+    "three": "^0.160.0",
+    "socket.io-client": "^4.7.2",
+    "firebase": "^10.8.0"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

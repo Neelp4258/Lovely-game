@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#000000">
+  <title>Lovely City - 3D Multiplayer Game</title>
+  <link rel="stylesheet" href="/styles/main.css">
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="loading-content">
+      <h1>LOVELY CITY</h1>
+      <div class="loading-bar">
+        <div class="loading-progress" id="loading-progress"></div>
+      </div>
+      <p id="loading-text">Loading game...</p>
+    </div>
+  </div>
+
+  <!-- Login Screen -->
+  <div id="login-screen" style="display: none;">
+    <div class="login-panel">
+      <h2>Welcome to Lovely City</h2>
+      <button id="google-login-btn" class="btn btn-primary">Sign in with Google</button>
+      <button id="anonymous-login-btn" class="btn btn-secondary">Play as Guest</button>
+    </div>
+  </div>
+
+  <!-- Lobby Screen -->
+  <div id="lobby-screen" style="display: none;">
+    <div class="lobby-panel">
+      <h2>Multiplayer Lobby</h2>
+      <div class="lobby-options">
+        <button id="create-room-btn" class="btn btn-primary">Create Room</button>
+        <div class="join-room-section">
+          <input type="text" id="room-code-input" placeholder="Enter room code" maxlength="6">
+          <button id="join-room-btn" class="btn btn-primary">Join Room</button>
+        </div>
+        <button id="play-solo-btn" class="btn btn-secondary">Play Solo</button>
+      </div>
+      <div id="room-info" style="display: none;">
+        <p>Room Code: <span id="current-room-code"></span></p>
+        <button id="start-game-btn" class="btn btn-success">Start Game</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Canvas -->
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+  </div>
+
+  <!-- UI Overlay -->
+  <div id="ui-overlay">
+    <!-- Top Bar -->
+    <div id="top-bar">
+      <div class="player-info">
+        <span id="player-name">Player</span>
+        <span id="player-money">💰 $1000</span>
+      </div>
+      <div class="room-info">
+        <span id="room-code-display"></span>
+      </div>
+    </div>
+
+    <!-- Interaction Prompt -->
+    <div id="interaction-prompt" style="display: none;">
+      <button id="interaction-btn" class="btn btn-interact">GET IN</button>
+      <p id="interaction-label"></p>
+    </div>
+
+    <!-- Mobile Joystick -->
+    <div id="joystick-container">
+      <div id="joystick-base">
+        <div id="joystick-stick"></div>
+      </div>
+    </div>
+
+    <!-- Mobile Action Buttons -->
+    <div id="mobile-actions">
+      <button id="run-btn" class="action-btn">🏃 RUN</button>
+      <button id="emote-btn" class="action-btn">😊</button>
+    </div>
+
+    <!-- Bottom Menu -->
+    <div id="bottom-menu">
+      <button class="menu-btn" data-panel="wardrobe">👔 Wardrobe</button>
+      <button class="menu-btn" data-panel="jobs">💼 Jobs</button>
+      <button class="menu-btn" data-panel="map">🗺️ Map</button>
+      <button class="menu-btn" data-panel="emotes">😊 Emotes</button>
+    </div>
+  </div>
+
+  <!-- Wardrobe Panel -->
+  <div id="wardrobe-panel" class="ui-panel" style="display: none;">
+    <div class="panel-header">
+      <h3>Wardrobe</h3>
+      <button class="close-btn">&times;</button>
+    </div>
+    <div class="panel-content">
+      <div class="customization-section">
+        <h4>Hair Style</h4>
+        <div class="option-grid">
+          <button class="option-btn" data-type="hairStyle" data-value="short">Short</button>
+          <button class="option-btn" data-type="hairStyle" data-value="long">Long</button>
+          <button class="option-btn" data-type="hairStyle" data-value="bald">Bald</button>
+        </div>
+      </div>
+      <div class="customization-section">
+        <h4>Hair Color</h4>
+        <input type="color" id="hair-color" value="#3d2817">
+      </div>
+      <div class="customization-section">
+        <h4>Skin Color</h4>
+        <input type="color" id="skin-color" value="#ffdbac">
+      </div>
+      <div class="customization-section">
+        <h4>Shirt Color</h4>
+        <input type="color" id="shirt-color" value="#4287f5">
+      </div>
+      <div class="customization-section">
+        <h4>Pants Color</h4>
+        <input type="color" id="pants-color" value="#2d2d2d">
+      </div>
+      <button id="save-customization-btn" class="btn btn-success">Save Changes</button>
+    </div>
+  </div>
+
+  <!-- Jobs Panel -->
+  <div id="jobs-panel" class="ui-panel" style="display: none;">
+    <div class="panel-header">
+      <h3>Available Jobs</h3>
+      <button class="close-btn">&times;</button>
+    </div>
+    <div class="panel-content">
+      <div class="job-list" id="job-list">
+        <!-- Jobs will be populated dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Shop Panel -->
+  <div id="shop-panel" class="ui-panel" style="display: none;">
+    <div class="panel-header">
+      <h3>Shop</h3>
+      <button class="close-btn">&times;</button>
+    </div>
+    <div class="panel-content">
+      <div class="shop-items" id="shop-items">
+        <!-- Items will be populated dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Car Dealership Panel -->
+  <div id="dealership-panel" class="ui-panel" style="display: none;">
+    <div class="panel-header">
+      <h3>Car Dealership</h3>
+      <button class="close-btn">&times;</button>
+    </div>
+    <div class="panel-content">
+      <div class="car-list" id="car-list">
+        <!-- Cars will be populated dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Interior Panel -->
+  <div id="interior-panel" class="ui-panel" style="display: none;">
+    <div class="panel-header">
+      <h3 id="interior-title">Interior</h3>
+      <button id="exit-interior-btn" class="btn btn-warning">Exit</button>
+    </div>
+    <div class="panel-content">
+      <div id="interior-content">
+        <!-- Interior-specific content -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Emote Menu -->
+  <div id="emote-menu" class="popup-menu" style="display: none;">
+    <button class="emote-option" data-emote="wave">👋 Wave</button>
+    <button class="emote-option" data-emote="dance">💃 Dance</button>
+    <button class="emote-option" data-emote="sit">🪑 Sit</button>
+    <button class="emote-option" data-emote="clap">👏 Clap</button>
+    <button class="emote-option" data-emote="kiss">💋 Kiss</button>
+  </div>
+
+  <!-- Kiss Request Dialog -->
+  <div id="kiss-request-dialog" class="dialog" style="display: none;">
+    <div class="dialog-content">
+      <p id="kiss-request-message"></p>
+      <div class="dialog-actions">
+        <button id="kiss-accept-btn" class="btn btn-success">Accept</button>
+        <button id="kiss-decline-btn" class="btn btn-danger">Decline</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="notification-toast" class="toast"></div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
