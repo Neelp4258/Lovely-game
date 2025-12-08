@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: lovely-city-server
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: FIREBASE_PROJECT_ID
+        value: vendor-f9973
+      - key: CLIENT_URL
+        sync: false
+        # Set this in Render Dashboard to your Netlify URL
+        # Example: https://your-site.netlify.app

@@ -1,0 +1,23 @@
+services:
+  # Backend Server (Node.js + Socket.io)
+  - type: web
+    name: lovely-city-server
+    runtime: node
+    region: oregon
+    plan: free
+    branch: claude/3d-multiplayer-city-game-01HCdtPqtypWrQrFAS5ZDE6w
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: FIREBASE_PROJECT_ID
+        value: vendor-f9973
+      - key: CLIENT_URL
+        generateValue: true
+        # You'll need to update this after deploying to Netlify
+        # Go to Render Dashboard > Environment and set to your Netlify URL
