@@ -14,11 +14,27 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const httpServer = createServer(app);
+
+// CORS configuration for production
+const getAllowedOrigins = () => {
+  const origins = ['http://localhost:5173', 'http://localhost:3000'];
+
+  if (process.env.CLIENT_URL) {
+    origins.push(process.env.CLIENT_URL);
+  }
+
+  // Add common Netlify patterns
+  if (process.env.NODE_ENV === 'production') {
+    origins.push(/\.netlify\.app$/);
+    origins.push(/\.netlify\.live$/);
+  }
+
+  return origins;
+};
+
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.NODE_ENV === 'production'
-      ? process.env.CLIENT_URL
-      : ['http://localhost:5173', 'http://localhost:3000'],
+    origin: getAllowedOrigins(),
     methods: ['GET', 'POST'],
     credentials: true
   },
@@ -28,8 +44,30 @@ const io = new Server(httpServer, {
 const PORT = process.env.PORT || 3000;
 const firebaseAdmin = new FirebaseAdmin();
 
-// Middleware
-app.use(cors());
+// Middleware - CORS for REST API
+app.use(cors({
+  origin: function(origin, callback) {
+    const allowedOrigins = getAllowedOrigins();
+
+    // Allow requests with no origin (mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+
+    // Check if origin matches allowed patterns
+    const isAllowed = allowedOrigins.some(allowed => {
+      if (typeof allowed === 'string') return allowed === origin;
+      if (allowed instanceof RegExp) return allowed.test(origin);
+      return false;
+    });
+
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
+
 app.use(express.json());
 
 // Serve static files from dist folder in production

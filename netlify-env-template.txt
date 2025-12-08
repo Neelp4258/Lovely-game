@@ -1,0 +1,25 @@
+====================================
+NETLIFY ENVIRONMENT VARIABLES SETUP
+====================================
+
+Go to: Netlify Dashboard → Your Site → Site settings → Environment variables
+
+Add this variable:
+
+┌─────────────────────────────────────────────────┐
+│ Variable name:                                  │
+│ VITE_SERVER_URL                                 │
+│                                                 │
+│ Value:                                          │
+│ https://your-server.onrender.com               │
+│                                                 │
+│ ⚠️  IMPORTANT: Replace with your actual Render  │
+│     server URL from Part 1 of deployment       │
+│                                                 │
+│ Scopes: ☑️ All scopes selected                  │
+└─────────────────────────────────────────────────┘
+
+Example:
+VITE_SERVER_URL=https://lovely-city-server.onrender.com
+
+That's it! Just one environment variable needed for Netlify.

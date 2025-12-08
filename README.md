@@ -63,12 +63,24 @@ A fully-featured 3D multiplayer city game built with Three.js, WebRTC, Firebase,
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### Option 1: Deploy to Production (Recommended)
+
+**Deploy in 10 minutes!** See [QUICK-START.md](./QUICK-START.md)
+
+Or detailed guide: [DEPLOYMENT.md](./DEPLOYMENT.md)
+
+- ✅ Deploy client to **Netlify** (free)
+- ✅ Deploy server to **Render** (free)
+- ✅ Share with friends worldwide!
+
+### Option 2: Local Development
+
+#### Prerequisites
 - Node.js 18+
 - npm or yarn
 - Firebase project (already configured in code)
 
-### Installation
+#### Installation
 
 1. **Clone the repository**
 ```bash
@@ -87,24 +99,7 @@ npm install
 cd ..
 ```
 
-3. **Configure Firebase Admin (Optional)**
-
-If you want server-side Firestore operations (purchases, jobs), set up Firebase Admin SDK:
-
-- Go to Firebase Console → Project Settings → Service Accounts
-- Generate a new private key
-- Save it as `server/serviceAccountKey.json`
-
-Or set environment variables in `server/.env`:
-```env
-PORT=3000
-NODE_ENV=development
-FIREBASE_PROJECT_ID=vendor-f9973
-FIREBASE_CLIENT_EMAIL=your-service-account-email
-FIREBASE_PRIVATE_KEY="your-private-key"
-```
-
-4. **Run the development server**
+3. **Run the development server**
 ```bash
 npm run dev
 ```
@@ -113,8 +108,23 @@ This will start:
 - Client dev server on `http://localhost:5173`
 - Signaling server on `http://localhost:3000`
 
-5. **Open the game**
+4. **Open the game**
 Navigate to `http://localhost:5173` in your browser
+
+#### Optional: Configure Firebase Admin
+
+For server-side Firestore operations (purchases, jobs):
+
+- Go to Firebase Console → Project Settings → Service Accounts
+- Generate a new private key
+- Save it as `server/serviceAccountKey.json`
+
+Or set environment variables in `server/.env`:
+```env
+FIREBASE_PROJECT_ID=vendor-f9973
+FIREBASE_CLIENT_EMAIL=your-service-account-email
+FIREBASE_PRIVATE_KEY="your-private-key"
+```
 
 ## 🎯 How to Play
 
@@ -232,37 +242,48 @@ Lovely-game/
 
 ## 🚢 Deployment
 
-### Deploy to Render / Railway / Fly.io
+### Recommended: Netlify + Render
 
-1. **Build the client**
-```bash
-npm run build
-```
+**Quick Deploy (10 minutes):**
+See [QUICK-START.md](./QUICK-START.md)
 
-2. **Set environment variables**
-```
-NODE_ENV=production
-PORT=3000
-FIREBASE_PROJECT_ID=vendor-f9973
-FIREBASE_CLIENT_EMAIL=<your-service-account-email>
-FIREBASE_PRIVATE_KEY=<your-private-key>
-```
+**Detailed Guide:**
+See [DEPLOYMENT.md](./DEPLOYMENT.md)
 
-3. **Start command**
-```bash
-npm start
-```
+**Architecture:**
+- **Client**: Netlify (free tier)
+- **Server**: Render (free tier)
+- **Database**: Firebase Firestore (free tier)
 
-The server will serve both the API and static files from `/dist`.
+**Why this stack?**
+- ✅ Free tier handles 100+ concurrent players
+- ✅ Global CDN (Netlify)
+- ✅ Auto-deploy on git push
+- ✅ HTTPS by default
+- ✅ Easy to scale
 
-### Deploy Client to Vercel/Netlify (Optional)
+### Alternative: All-in-One Deployment
 
-If you want to separate client and server:
+Deploy everything to Render:
 
-1. Build client: `npm run build`
-2. Deploy `dist/` folder to Vercel/Netlify
-3. Set `VITE_SERVER_URL` to your server URL
-4. Deploy server separately
+1. Build the client: `npm run build`
+2. Set environment variables (see `render-env-template.txt`)
+3. Start command: `npm start`
+4. Server serves both API and static files from `/dist`
+
+### Cost Breakdown
+
+**Free Tier:**
+- Netlify: 100GB bandwidth/month
+- Render: 750 hours/month
+- Firebase: 50K reads, 20K writes/day
+- **Total: $0/month**
+
+**Paid (for high traffic):**
+- Netlify Pro: $19/month
+- Render Starter: $7/month
+- Firebase Blaze: Pay as you go
+- **Total: ~$26/month**
 
 ## 🔧 Configuration
 

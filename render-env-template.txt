@@ -1,0 +1,51 @@
+====================================
+RENDER ENVIRONMENT VARIABLES SETUP
+====================================
+
+Go to: Render Dashboard → Your Web Service → Environment
+
+Add these variables:
+
+┌─────────────────────────────────────────────────┐
+│ Required Variables:                             │
+├─────────────────────────────────────────────────┤
+│ NODE_ENV                                        │
+│ production                                      │
+├─────────────────────────────────────────────────┤
+│ PORT                                            │
+│ 3000                                            │
+├─────────────────────────────────────────────────┤
+│ FIREBASE_PROJECT_ID                             │
+│ vendor-f9973                                    │
+├─────────────────────────────────────────────────┤
+│ CLIENT_URL                                      │
+│ https://your-site.netlify.app                  │
+│ ⚠️  Replace with your actual Netlify URL        │
+└─────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────┐
+│ Optional Variables (for server-side Firestore): │
+├─────────────────────────────────────────────────┤
+│ FIREBASE_CLIENT_EMAIL                           │
+│ your-firebase-admin@vendor-f9973.iam...        │
+├─────────────────────────────────────────────────┤
+│ FIREBASE_PRIVATE_KEY                            │
+│ -----BEGIN PRIVATE KEY-----                    │
+│ Your key here...                                │
+│ -----END PRIVATE KEY-----                       │
+│                                                 │
+│ Note: Get these from Firebase Console →        │
+│ Project Settings → Service Accounts →          │
+│ Generate new private key                       │
+└─────────────────────────────────────────────────┘
+
+Minimum Required (game will work without Firebase Admin):
+✅ NODE_ENV
+✅ PORT
+✅ FIREBASE_PROJECT_ID
+✅ CLIENT_URL
+
+Full Features (purchases, jobs):
+✅ All required variables above
+✅ FIREBASE_CLIENT_EMAIL
+✅ FIREBASE_PRIVATE_KEY
