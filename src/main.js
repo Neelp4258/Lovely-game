@@ -1,6 +1,7 @@
 import { auth, signInWithPopup, signInAnonymously, GoogleAuthProvider } from './config/firebase.js';
 import { onAuthStateChanged } from 'firebase/auth';
 import { Game } from './core/Game.js';
+import { DebugPanel } from './ui/DebugPanel.js';
 import * as THREE from 'three';
 
 // Make THREE globally available for Game class
@@ -8,6 +9,19 @@ window.THREE = THREE;
 
 let game = null;
 let currentUser = null;
+let debugPanel = null;
+
+// Initialize debug panel immediately
+console.log('🔧 Initializing debug panel...');
+try {
+  debugPanel = new DebugPanel();
+  window.debugPanel = debugPanel;
+  window.game = null; // Make accessible to debug panel
+  window.currentUser = null;
+  console.log('✅ Debug panel initialized - Click 🐛 button to open');
+} catch (error) {
+  console.error('❌ Failed to initialize debug panel:', error);
+}
 
 // Show loading screen
 function showLoadingScreen() {
@@ -78,12 +92,14 @@ function setupAuth() {
   onAuthStateChanged(auth, (user) => {
     if (user) {
       currentUser = user;
+      window.currentUser = user; // Make accessible to debug panel
       hideLoginScreen();
       showLobbyScreen();
-      console.log('User signed in:', user.uid);
+      console.log('✅ User signed in:', user.uid);
     } else {
       hideLoadingScreen();
       showLoginScreen();
+      console.log('⚠️ No user signed in');
     }
   });
 }
@@ -159,50 +175,78 @@ function setupLobby() {
 }
 
 async function initializeGame() {
-  if (game) return;
+  if (game) {
+    console.log('⚠️ Game already initialized');
+    return;
+  }
 
+  console.log('🎮 Starting game initialization...');
   showLoadingScreen();
   updateLoadingProgress(0, 'Initializing game...');
 
   const canvas = document.getElementById('game-canvas');
+  console.log('📺 Canvas element:', canvas ? 'Found' : 'NOT FOUND');
 
   try {
+    console.log('🌍 Creating game world...');
     updateLoadingProgress(20, 'Creating game world...');
     game = new Game(canvas, currentUser);
+    window.game = game; // Make accessible to debug panel
 
+    console.log('📦 Loading game assets...');
     updateLoadingProgress(60, 'Loading assets...');
     await game.init();
 
     updateLoadingProgress(100, 'Ready!');
-
-    console.log('Game ready');
+    console.log('✅ Game initialization complete!');
   } catch (error) {
-    console.error('Error initializing game:', error);
-    alert('Failed to initialize game');
+    console.error('❌ Error initializing game:', error);
+    console.error('Error stack:', error.stack);
+
+    // Show detailed error
+    const errorMsg = `Failed to initialize game:\n\n${error.message}\n\nCheck debug panel for details (click 🐛 button)`;
+    alert(errorMsg);
+
+    // Hide loading screen on error
+    hideLoadingScreen();
+
+    throw error; // Re-throw to see in console
   }
 }
 
 function startGame() {
-  if (!game) return;
+  if (!game) {
+    console.error('❌ Cannot start game - game not initialized');
+    alert('Game not initialized. Please try creating/joining room again.');
+    return;
+  }
 
+  console.log('🚀 Starting game...');
   hideLobbyScreen();
   hideLoadingScreen();
 
   // Show game UI
   document.getElementById('ui-overlay').style.display = 'block';
+  console.log('✅ UI overlay shown');
 
   // Update room code in UI
   if (game.networkManager) {
     const roomId = game.networkManager.getRoomId();
     if (roomId) {
       game.uiManager.updateRoomCode(roomId);
+      console.log('📡 Room ID:', roomId);
     }
   }
 
   // Start game loop
-  game.start();
-
-  console.log('Game started');
+  try {
+    game.start();
+    console.log('✅ Game loop started');
+    console.log('🎮 Game is now running! Use WASD or joystick to move.');
+  } catch (error) {
+    console.error('❌ Error starting game:', error);
+    alert('Error starting game: ' + error.message);
+  }
 }
 
 // Initialize on page load
