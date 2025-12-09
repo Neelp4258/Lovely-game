@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { BUILDING_TYPES, INTERIOR_TYPES } from '../../shared/constants.js';
+import { getSharedMaterial, optimizeForMobile } from '../utils/optimization.js';
 
 export class Building {
   constructor({ type, position, color, size }) {
@@ -8,16 +9,16 @@ export class Building {
     this.color = color;
     this.size = size;
     this.interiorType = this.getInteriorType();
+    this.optimizationSettings = optimizeForMobile();
 
     this.createMesh();
     this.createSign();
   }
 
   createMesh() {
-    // Main building structure
+    // Main building structure - use shared material
     const geometry = new THREE.BoxGeometry(this.size.width, this.size.height, this.size.depth);
-    const material = new THREE.MeshStandardMaterial({
-      color: this.color,
+    const material = getSharedMaterial('building', this.color, {
       roughness: 0.7,
       metalness: 0.2
     });
@@ -25,8 +26,8 @@ export class Building {
     this.mesh = new THREE.Mesh(geometry, material);
     this.mesh.position.copy(this.position);
     this.mesh.position.y = this.size.height / 2;
-    this.mesh.castShadow = true;
-    this.mesh.receiveShadow = true;
+    this.mesh.castShadow = this.optimizationSettings.shadowsEnabled;
+    this.mesh.receiveShadow = this.optimizationSettings.shadowsEnabled;
 
     // Store building data in mesh userData
     this.mesh.userData = {
@@ -47,10 +48,8 @@ export class Building {
   }
 
   createWindows() {
-    const windowMaterial = new THREE.MeshStandardMaterial({
-      color: 0x87ceeb,
-      roughness: 0.1,
-      metalness: 0.8,
+    // Use shared window material
+    const windowMaterial = getSharedMaterial('window', 0x87ceeb, {
       emissive: 0x4488ff,
       emissiveIntensity: 0.2
     });
@@ -87,8 +86,7 @@ export class Building {
 
   createDoor() {
     const doorGeometry = new THREE.BoxGeometry(2, 3, 0.2);
-    const doorMaterial = new THREE.MeshStandardMaterial({
-      color: 0x654321,
+    const doorMaterial = getSharedMaterial('door', 0x654321, {
       roughness: 0.8
     });
 
@@ -107,8 +105,7 @@ export class Building {
       3,
       4
     );
-    const roofMaterial = new THREE.MeshStandardMaterial({
-      color: 0x8b4513,
+    const roofMaterial = getSharedMaterial('roof', 0x8b4513, {
       roughness: 0.9
     });
 

@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { GAME_CONSTANTS, BUILDING_TYPES } from '../../shared/constants.js';
 import { Building } from './Building.js';
+import { getSharedMaterial, optimizeForMobile } from '../utils/optimization.js';
 
 export class City {
   constructor(scene) {
@@ -8,32 +9,33 @@ export class City {
     this.buildings = [];
     this.roads = [];
     this.interactables = new Map();
+    this.optimizationSettings = optimizeForMobile();
     this.generate();
   }
 
   generate() {
+    console.log('🏙️ Generating city...');
     this.createGround();
     this.createRoadGrid();
     this.createBuildings();
     this.createStreetLights();
+    console.log('✅ City generated with', this.buildings.length, 'buildings');
   }
 
   createGround() {
     const groundGeometry = new THREE.PlaneGeometry(GAME_CONSTANTS.CITY_SIZE, GAME_CONSTANTS.CITY_SIZE);
-    const groundMaterial = new THREE.MeshStandardMaterial({
-      color: 0x3a5f3a,
+    const groundMaterial = getSharedMaterial('ground', 0x3a5f3a, {
       roughness: 0.8
     });
 
     const ground = new THREE.Mesh(groundGeometry, groundMaterial);
     ground.rotation.x = -Math.PI / 2;
-    ground.receiveShadow = true;
+    ground.receiveShadow = this.optimizationSettings.shadowsEnabled;
     this.scene.add(ground);
   }
 
   createRoadGrid() {
-    const roadMaterial = new THREE.MeshStandardMaterial({
-      color: 0x2d2d2d,
+    const roadMaterial = getSharedMaterial('road', 0x2d2d2d, {
       roughness: 0.9
     });
 
