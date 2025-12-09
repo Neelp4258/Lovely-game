@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 // Detect if device is mobile or has limited WebGL capabilities
 export function isMobileOrLowEnd() {
   // Check if mobile
