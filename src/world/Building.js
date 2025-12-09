@@ -48,6 +48,12 @@ export class Building {
   }
 
   createWindows() {
+    // Skip windows on mobile to save GPU memory
+    if (!this.optimizationSettings.shadowsEnabled) {
+      console.log('⚡ Skipping windows (mobile mode)');
+      return;
+    }
+
     // Use shared window material
     const windowMaterial = getSharedMaterial('window', 0x87ceeb, {
       emissive: 0x4488ff,
@@ -59,8 +65,9 @@ export class Building {
     const numWindowsX = Math.floor(this.size.width / windowSpacing) - 1;
     const numWindowsZ = Math.floor(this.size.depth / windowSpacing) - 1;
 
-    // Front windows
-    for (let i = 0; i < numWindowsX; i++) {
+    // Front windows - reduced count on desktop too
+    const maxWindows = 3; // Limit windows per side
+    for (let i = 0; i < Math.min(numWindowsX, maxWindows); i++) {
       const windowGeometry = new THREE.BoxGeometry(windowSize, windowSize, 0.2);
       const window = new THREE.Mesh(windowGeometry, windowMaterial);
       window.position.set(
@@ -71,17 +78,7 @@ export class Building {
       this.mesh.add(window);
     }
 
-    // Side windows
-    for (let i = 0; i < numWindowsZ; i++) {
-      const windowGeometry = new THREE.BoxGeometry(0.2, windowSize, windowSize);
-      const window = new THREE.Mesh(windowGeometry, windowMaterial);
-      window.position.set(
-        this.position.x + this.size.width / 2 + 0.1,
-        this.position.y + this.size.height / 3,
-        this.position.z - this.size.depth / 2 + (i + 1) * windowSpacing
-      );
-      this.mesh.add(window);
-    }
+    // Skip side windows to reduce geometry further
   }
 
   createDoor() {

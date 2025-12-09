@@ -143,45 +143,57 @@ export class City {
   }
 
   createStreetLights() {
-    const lightPositions = [
-      new THREE.Vector3(-40, 0, -40),
-      new THREE.Vector3(-40, 0, 40),
-      new THREE.Vector3(40, 0, -40),
-      new THREE.Vector3(40, 0, 40),
-      new THREE.Vector3(0, 0, -60),
-      new THREE.Vector3(0, 0, 60),
-      new THREE.Vector3(-60, 0, 0),
-      new THREE.Vector3(60, 0, 0),
-    ];
+    // Reduce lights on mobile to save GPU memory
+    const lightPositions = this.optimizationSettings.shadowsEnabled
+      ? [
+          new THREE.Vector3(-40, 0, -40),
+          new THREE.Vector3(-40, 0, 40),
+          new THREE.Vector3(40, 0, -40),
+          new THREE.Vector3(40, 0, 40),
+          new THREE.Vector3(0, 0, -60),
+          new THREE.Vector3(0, 0, 60),
+          new THREE.Vector3(-60, 0, 0),
+          new THREE.Vector3(60, 0, 0),
+        ]
+      : [
+          // Only 4 lights on mobile
+          new THREE.Vector3(-40, 0, -40),
+          new THREE.Vector3(40, 0, 40),
+        ];
+
+    const poleMaterial = getSharedMaterial('pole', 0x333333);
+    const bulbMaterial = getSharedMaterial('bulb', 0xffffe0, {
+      emissive: 0xffffe0,
+      emissiveIntensity: 0.5
+    });
 
     lightPositions.forEach(pos => {
-      const poleGeometry = new THREE.CylinderGeometry(0.2, 0.2, 8, 8);
-      const poleMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
+      // Simplified pole for mobile
+      const poleGeometry = new THREE.CylinderGeometry(0.2, 0.2, 8, this.optimizationSettings.shadowsEnabled ? 8 : 4);
       const pole = new THREE.Mesh(poleGeometry, poleMaterial);
       pole.position.copy(pos);
       pole.position.y = 4;
-      pole.castShadow = true;
+      pole.castShadow = this.optimizationSettings.shadowsEnabled;
       this.scene.add(pole);
 
       // Light bulb
-      const bulbGeometry = new THREE.SphereGeometry(0.5, 16, 16);
-      const bulbMaterial = new THREE.MeshStandardMaterial({
-        color: 0xffffe0,
-        emissive: 0xffffe0,
-        emissiveIntensity: 0.5
-      });
+      const bulbGeometry = new THREE.SphereGeometry(0.5, this.optimizationSettings.shadowsEnabled ? 16 : 8, this.optimizationSettings.shadowsEnabled ? 16 : 8);
       const bulb = new THREE.Mesh(bulbGeometry, bulbMaterial);
       bulb.position.copy(pos);
       bulb.position.y = 8;
       this.scene.add(bulb);
 
-      // Point light
-      const light = new THREE.PointLight(0xffffe0, 1, 30);
-      light.position.copy(pos);
-      light.position.y = 8;
-      light.castShadow = true;
-      this.scene.add(light);
+      // Only add point lights on desktop (too expensive on mobile)
+      if (this.optimizationSettings.shadowsEnabled) {
+        const light = new THREE.PointLight(0xffffe0, 1, 30);
+        light.position.copy(pos);
+        light.position.y = 8;
+        light.castShadow = false; // Disable shadow casting for performance
+        this.scene.add(light);
+      }
     });
+
+    console.log(`✅ Created ${lightPositions.length} street lights (${this.optimizationSettings.shadowsEnabled ? 'desktop' : 'mobile'} mode)`);
   }
 
   getNearbyInteractables(position, radius) {
